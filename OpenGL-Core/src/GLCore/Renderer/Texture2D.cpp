@@ -1,8 +1,8 @@
 #include "glpch.h"
-#include "Texture.h"
+#include "Texture2D.h"
 #include "glad/glad.h"
 #include "stb_image.h"
-Texture::Texture(const std::string& path):
+Texture2D::Texture2D(const std::string& path):
 	m_RendererID(0),m_FilePath(path),m_LocalBuffer(nullptr),m_Width(0),m_Height(0),m_BPP(0)
 {
 	stbi_set_flip_vertically_on_load(1);
@@ -25,18 +25,18 @@ Texture::Texture(const std::string& path):
 	}
 }
 
-Texture::~Texture()
+Texture2D::~Texture2D()
 {
 	glDeleteTextures(1, &m_RendererID);
 }
 
-void Texture::Bind(unsigned int slot /*= 0*/) const
+void Texture2D::Bind(unsigned int slot /*= 0*/) const
 {
-	glActiveTexture(slot);
+	glActiveTexture(GL_TEXTURE0 +slot);
 	glBindTexture(GL_TEXTURE_2D, m_RendererID);
 }
 
-void Texture::UnBind() const
+void Texture2D::UnBind() const
 {
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
