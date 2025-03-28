@@ -1,5 +1,5 @@
 #include "ExampleLayer.h"
-
+#include "GLCore/Renderer/VertexBufferLayout.h"
 using namespace GLCore;
 using namespace GLCore::Utils;
 
@@ -22,13 +22,13 @@ void ExampleLayer::OnAttach()
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	m_Shader = Shader::FromGLSLTextFiles(
+	m_Shader =std::make_unique<Shader>(
 		"assets/shaders/test.vert.glsl",
 		"assets/shaders/test.frag.glsl"
 	);
-
-	glCreateVertexArrays(1, &m_QuadVA);
-	glBindVertexArray(m_QuadVA);
+	m_Shader->Bind();
+	//glCreateVertexArrays(1, &m_QuadVA);
+	//glBindVertexArray(m_QuadVA);
 
 	float vertices[] = {
 		-0.5f, -0.5f, 0.0f,
@@ -37,24 +37,32 @@ void ExampleLayer::OnAttach()
 		-0.5f,  0.5f, 0.0f
 	};
 
-	glCreateBuffers(1, &m_QuadVB);
-	glBindBuffer(GL_ARRAY_BUFFER, m_QuadVB);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	m_VAO = std::make_unique<VertexArray>();
+	m_VertexBuffer=std::make_unique<VertexBuffer> (vertices,sizeof(vertices));
+	VertexBufferLayout vbl;
+	vbl.Push<float>(3);
+	m_VAO->AdddBuffer(*m_VertexBuffer, vbl);
+	//glCreateBuffers(1, &m_QuadVB);
+	//glBindBuffer(GL_ARRAY_BUFFER, m_QuadVB);
+	//glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, 0);
+	//glEnableVertexAttribArray(0);
+	//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, 0);
 
 	uint32_t indices[] = { 0, 1, 2, 2, 3, 0 };
-	glCreateBuffers(1, &m_QuadIB);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_QuadIB);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+	//glCreateBuffers(1, &m_QuadIB);
+	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_QuadIB);
+	//glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+	m_IndexBuffer = std::make_unique<IndexBuffer>(indices, 6);
 }
 
 void ExampleLayer::OnDetach()
 {
-	glDeleteVertexArrays(1, &m_QuadVA);
-	glDeleteBuffers(1, &m_QuadVB);
-	glDeleteBuffers(1, &m_QuadIB);
+	//glDeleteVertexArrays(1, &m_QuadVA);
+	//glDeleteBuffers(1, &m_QuadVB);
+	//glDeleteBuffers(1, &m_QuadIB);
+	//m_VertexArray->UnBind();
+	//m_VertexArray
 }
 
 void ExampleLayer::OnEvent(Event& event)
@@ -83,16 +91,15 @@ void ExampleLayer::OnUpdate(Timestep ts)
 	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	glUseProgram(m_Shader->GetRendererID());
 
-	int location = glGetUniformLocation(m_Shader->GetRendererID(), "u_ViewProjection");
-	glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(m_CameraController.GetCamera().GetViewProjectionMatrix()));
+	m_Shader->Bind();
+	m_Shader->SetUniformMat4f("u_ViewProjection", m_CameraController.GetCamera().GetViewProjectionMatrix());
 
-	location = glGetUniformLocation(m_Shader->GetRendererID(), "u_Color");
-	glUniform4fv(location, 1, glm::value_ptr(m_SquareColor));
+	m_Shader->SetUniform4fv("u_Color", m_SquareColor);
 
-	glBindVertexArray(m_QuadVA);
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+
+	//m_Renderer.Clear();
+	m_Renderer.Draw(*m_VAO, *m_IndexBuffer, *m_Shader);
 }
 
 void ExampleLayer::OnImGuiRender()

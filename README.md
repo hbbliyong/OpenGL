@@ -8,7 +8,7 @@ Currently only "officially" supports Windows - Mac and Linux support is coming s
 ```
 git clone --recursive https://github.com/hbbliyong/OpenGL
 ```
-update depent
+update dependencies
 ```
 git submodule init
 git submodule update
