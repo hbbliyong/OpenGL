@@ -21,7 +21,10 @@ void ExampleLayer::OnAttach()
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	
+	//auto win = Application::Get().GetWindow();
+	//m_Breakout = std::make_unique<Game>(win.GetWidth(), win.GetHeight());
+	m_Breakout = std::make_unique<Game>(800, 600);
+	m_Breakout->Init();
 	m_Shader = std::make_unique<Shader>(
 		"assets/shaders/test.vert.glsl",
 		"assets/shaders/test.frag.glsl"
@@ -85,14 +88,49 @@ void ExampleLayer::OnEvent(Event& event)
 			m_SquareColor = m_SquareBaseColor;
 			return false;
 		});
+	dispatcher.Dispatch< KeyPressedEvent>(
+		[&](KeyPressedEvent& e)
+		{
+			auto key = e.GetKeyCode();
+			if (key == 1 || key == 2)
+			{
+				//Application::Get().GetWindow().
+				//close
+			}
+			if (key > 0 && key < 1024)
+			{
+				m_Breakout->Keys[key] = GL_TRUE;
+			}
+			return false;
+		});
+	dispatcher.Dispatch< KeyPressedEvent>(
+		[&](KeyPressedEvent& e)
+		{
+			auto key = e.GetKeyCode();
+			if (key == 1 || key == 2)
+			{
+				//Application::Get()
+				//close
+			}
+			if (key > 0 && key < 1024)
+			{
+				m_Breakout->Keys[key] = GL_FALSE;
+			}
+			return false;
+		});
+
 }
 
 void ExampleLayer::OnUpdate(Timestep ts)
 {
 	m_CameraController.OnUpdate(ts);
 
+
+	m_Breakout->ProcessInput(ts);
+	m_Breakout->Update(ts);
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	m_Breakout->Render();
 
 	m_Texture->Bind();
 

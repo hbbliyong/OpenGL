@@ -7,6 +7,7 @@
 #include <GLCore/Renderer/IndexBuffer.h>
 #include <GLCore/Renderer/Renderer.h>
 #include <GLCore/Renderer/Texture2D.h>
+#include "Game.h"
 #include <memory>
 class ExampleLayer : public GLCore::Layer
 {
@@ -25,6 +26,7 @@ private:
 	std::unique_ptr <IndexBuffer> m_IndexBuffer;
 	std::unique_ptr<VertexBuffer> m_VertexBuffer;
 	std::unique_ptr<Texture2D> m_Texture;
+	std::unique_ptr<Game> m_Breakout;
 	Renderer m_Renderer;
 	GLCore::Utils::OrthographicCameraController m_CameraController;
 
