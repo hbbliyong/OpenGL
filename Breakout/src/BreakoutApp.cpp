@@ -3,11 +3,11 @@
 
 using namespace GLCore;
 
-class Example : public Application
+class Breakout : public Application
 {
 public:
-	Example()
-		: Application("OpenGL Examples")
+	Breakout()
+		: Application("Breakout")
 	{
 		PushLayer(new ExampleLayer());
 	}
@@ -15,6 +15,6 @@ public:
 
 int main()
 {
-	std::unique_ptr<Example> app = std::make_unique<Example>();
+	std::unique_ptr<Breakout> app = std::make_unique<Breakout>();
 	app->Run();
 }
