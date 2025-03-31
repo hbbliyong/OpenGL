@@ -3,7 +3,7 @@
 std::map<std::string, std::shared_ptr < Shader> > ResourceManager::Shaders;
 std::map<std::string, std::shared_ptr< Texture2D>> ResourceManager::Textures;
 
-std::shared_ptr <Shader> ResourceManager::LoadShader(const std::string& vShaderFiles, const std::string& fShaderFiles, const std::string& gShaderFiles, std::string& name)
+std::shared_ptr <Shader> ResourceManager::LoadShader(const std::string& vShaderFiles, const std::string& fShaderFiles, const std::string& gShaderFiles,const std::string& name)
 {
 	auto it = Shaders.find(name);
 	if (it == Shaders.end())

@@ -134,7 +134,7 @@ void Shader::SetUniform4f(const std::string& name, float v0, float v1, float v2,
 }
 void Shader::SetUniform3fv(const std::string& name, const glm::vec3& value)
 {
-	glUniform4fv(GetUniformLocation(name), 1, glm::value_ptr(value));
+	glUniform3fv(GetUniformLocation(name), 1, glm::value_ptr(value));
 }
 void Shader::SetUniform4fv(const std::string& name, const glm::vec4& value)
 {

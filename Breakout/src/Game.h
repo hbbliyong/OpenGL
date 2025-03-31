@@ -1,6 +1,6 @@
 #pragma once
 #include <glad/glad.h>
-
+#include "SpriteRenderer.h"
 
 // Represents the current state of the game
 enum GameState {
@@ -20,9 +20,12 @@ class Game
         Game(GLuint width, GLuint height);
         ~Game();
         // 初始化游戏状态（加载所有的着色器/纹理/关卡）
-        void Init();
+        void Init(const glm::mat4& projection);
         // 游戏循环
         void ProcessInput(GLfloat dt);
         void Update(GLfloat dt);
         void Render();
+
+private:
+    SpriteRenderer* m_Renderer;
 };
