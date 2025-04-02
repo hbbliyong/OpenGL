@@ -1,6 +1,6 @@
 #pragma once
 #include <string>
-
+#include "glad/glad.h"
 class Texture2D
 {
 public:
@@ -16,5 +16,5 @@ private:
 	unsigned int m_RendererID;
 	std::string m_FilePath;
 	unsigned char* m_LocalBuffer;
-	int m_Width, m_Height, m_BPP;
+	int m_Width, m_Height, m_Channels;
 };

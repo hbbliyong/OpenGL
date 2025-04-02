@@ -21,7 +21,7 @@ void SpriteRenderer::DrawSprite(Texture2D& texture, glm::vec2 positon, glm::vec2
     m_Shader.SetUniformMat4f("model", model);
     m_Shader.SetUniform3fv("spriteColor", color);
    // m_Shader.SetUniform1i("image", 0);
-    texture.Bind();
+   texture.Bind();
 
     GLint currentVBO;
     glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &currentVBO);
@@ -56,12 +56,20 @@ void SpriteRenderer::initRenderData()
  //   uint32_t indices[] = { 0, 1, 2, 2, 3, 0 };
 
 // 去重后的唯一顶点数组（VBO）
-	float vertices[] = {
-		0.0f, 1.0f, 0.0f, 1.0f,  // 索引0
-		1.0f, 0.0f, 1.0f, 0.0f,  // 索引1
-		0.0f, 0.0f, 0.0f, 0.0f,  // 索引2
-		1.0f, 1.0f, 1.0f, 1.0f   // 索引3
-	};
+	//float vertices[] = {
+	//	0.0f, 1.0f, 0.0f, 1.0f,  // 索引0
+	//	1.0f, 0.0f, 1.0f, 0.0f,  // 索引1
+	//	0.0f, 0.0f, 0.0f, 0.0f,  // 索引2
+	//	1.0f, 1.0f, 1.0f, 1.0f   // 索引3
+	//};
+    float vertices[] = {
+        // 位置X, 位置Y, 纹理S, 纹理T
+        0.0f, 1.0f, 0.0f, 0.0f,  // 顶点0：左上角，纹理左下角 (0,0)
+        1.0f, 0.0f, 1.0f, 1.0f,  // 顶点1：右下角，纹理右上角 (1,1)
+        0.0f, 0.0f, 0.0f, 1.0f,  // 顶点2：左下角，纹理左上角 (0,1)
+        1.0f, 1.0f, 1.0f, 0.0f   // 顶点3：右上角，纹理右下角 (1,0)
+    };
+
 
 	// 索引数组（IBO）
 	unsigned int indices[] = {

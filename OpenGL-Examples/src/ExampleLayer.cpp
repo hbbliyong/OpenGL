@@ -56,7 +56,7 @@ void ExampleLayer::OnAttach()
 	//glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 	m_IndexBuffer = std::make_unique<IndexBuffer>(indices, 6);
 
-	m_Texture = std::make_unique<Texture2D>("assets/textures/Hazel_Logo_Text_Light_Square.png");
+	m_Texture = std::make_unique<Texture2D>("E:/study/OpenGL/Breakout/assets/textures/awesomeface.png");
 }
 
 void ExampleLayer::OnDetach()

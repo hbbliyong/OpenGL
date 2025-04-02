@@ -18,7 +18,7 @@ void ExampleLayer::OnAttach()
 {
 	EnableGLDebugging();
 
-	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_CULL_FACE);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	//auto win = Application::Get().GetWindow();
@@ -65,11 +65,13 @@ void ExampleLayer::OnEvent(Event& event)
 			if (key > 0 && key < 1024)
 			{
 				m_Breakout->Keys[key] = GL_TRUE;
+
 			}
+
 			return false;
 		});
-	dispatcher.Dispatch< KeyPressedEvent>(
-		[&](KeyPressedEvent& e)
+	dispatcher.Dispatch< KeyReleasedEvent>(
+		[&](KeyReleasedEvent& e)
 		{
 			auto key = e.GetKeyCode();
 			if (key == 1 || key == 2)

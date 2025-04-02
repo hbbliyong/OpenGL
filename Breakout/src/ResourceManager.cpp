@@ -13,13 +13,14 @@ std::shared_ptr <Shader> ResourceManager::LoadShader(const std::string& vShaderF
 	return it->second;
 }
 
-std::shared_ptr < Shader> ResourceManager::GetShader(std::string& name)
+std::shared_ptr < Shader> ResourceManager::GetShader(const std::string& name)
 {
 	return	Shaders[name];
 }
 
-std::shared_ptr<Texture2D> ResourceManager::LoadTexture(const std::string& file, bool alpha, std::string& name)
+std::shared_ptr<Texture2D> ResourceManager::LoadTexture(const std::string& file, const std::string& name)
 {
+	
 	auto it = Textures.find(name);
 	if (it == Textures.end())
 	{
@@ -29,7 +30,7 @@ std::shared_ptr<Texture2D> ResourceManager::LoadTexture(const std::string& file,
 	return it->second;
 }
 
-std::shared_ptr<Texture2D> ResourceManager::GetTexture(std::string& name)
+std::shared_ptr<Texture2D> ResourceManager::GetTexture(const std::string& name)
 {
 	return Textures[name];
 }
