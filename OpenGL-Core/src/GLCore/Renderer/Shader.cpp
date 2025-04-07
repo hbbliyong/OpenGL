@@ -127,10 +127,21 @@ void Shader::SetUniform1iv(const std::string& name, int count, int* value)
 {
 	glUniform1iv(GetUniformLocation(name), count, value);
 }
-
+void Shader::SetUniform1fv(const std::string& name, int count, float* value)
+{
+	glUniform1fv(GetUniformLocation(name), count, value);
+}
 void Shader::SetUniform4f(const std::string& name, float v0, float v1, float v2, float v3)
 {
 	glUniform4f(GetUniformLocation(name), v0, v1, v2, v3);
+}
+void Shader::SetUniform2f(const std::string& name, const glm::vec2& value)
+{
+	glUniform2f(GetUniformLocation(name),value.x,value.y);
+}
+void Shader::SetUniform2fv(const std::string& name,int row, const float* value)
+{
+	glUniform2fv(GetUniformLocation(name), row, value);
 }
 void Shader::SetUniform3fv(const std::string& name, const glm::vec3& value)
 {

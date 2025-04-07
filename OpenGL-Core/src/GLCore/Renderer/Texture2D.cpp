@@ -10,7 +10,7 @@ Texture2D::Texture2D(const std::string& path):
 	 m_LocalBuffer = stbi_load(path.c_str(), &m_Width, &m_Height, &m_Channels, 0);
 	//m_LocalBuffer = stbi_load("E:/block_solid.png", &m_Width, &m_Height, &m_Channels, 0);
 	// std::cout << "图片路径" <<path<< std::endl;
-	//if (m_LocalBuffer)
+	if (!m_LocalBuffer)
 	//{
 	//	// 打印前4个像素的RGB值（假设 channels=4）
 	//	for (int i = 0; i < 4 * 4; i += 4)
@@ -19,9 +19,9 @@ Texture2D::Texture2D(const std::string& path):
 	//	}
 	//}
 	//else
-	//{
-	//	printf("Failed to load texture!\n");
-	//}
+	{
+		printf("Failed to load texture!\n");
+	}
 
 	GLenum format = GL_RGB;
 	if (m_Channels == 4)
@@ -81,6 +81,22 @@ void Texture2D::Bind(unsigned int slot /*= 0*/) const
 
 void Texture2D::UnBind() const
 {
+	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+void Texture2D::Generate(GLuint width, GLuint height, unsigned char* data)
+{
+	this->m_Width = width;
+	this->m_Height = height;
+	glGenTextures(1, &m_RendererID);
+	glBindTexture(GL_TEXTURE_2D, this->m_RendererID);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+	// Set Texture wrap and filter modes
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	// Unbind texture
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 

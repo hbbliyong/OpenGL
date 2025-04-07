@@ -3,11 +3,18 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "GLCore/Core/KeyCodes.h"
 #include "BallObject.h"
-GameObject* Player;
+#include "ParticleGenerator.h"
+#include "PostProcessor.h"
+#include "GLCore/Core/Application.h"
 const glm::vec2 INITIAL_BALL_VELOCITY(100.0f, -350.0f);
 const float BALL_RADIUS = 12.5f;
-
+GameObject* Player;
 BallObject* Ball;
+ParticleGenerator* Particles;
+PostProcessor* Effects;
+
+GLfloat   ShakeTime = 0.0f;
+
 Game::Game(GLuint width, GLuint height)
 	: State(GAME_ACTIVE), Keys(), Width(width), Height(height)
 {
@@ -18,20 +25,30 @@ Game::~Game()
 {
 	delete m_Renderer;
 	delete Player;
+	delete Particles;
+	delete Effects;
 }
 
-void Game::Init(const glm::mat4& projection)
+void Game::Init(const glm::mat4& projection1)
 {
 	auto shader = ResourceManager::LoadShader("assets/shaders/sprite.vert.glsl", "assets/shaders/sprite.frag.glsl", "", "sprite");
-	glm::mat4 projection1 = glm::ortho(0.0f, static_cast<float>(Width), static_cast<float>(Height), 0.0f, -1.0f, 1.0f);
+	auto particleShader=ResourceManager::LoadShader("assets/shaders/particle.vert.glsl", "assets/shaders/particle.frag.glsl", "", "particle");
+	ResourceManager::LoadShader("assets/shaders/post_processing.vert.glsl", "assets/shaders/post_processing.frag.glsl", "", "postprocessing");
+	glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(Width), static_cast<float>(Height), 0.0f, -1.0f, 1.0f);
 	shader->Bind();
 	shader->SetUniform1i("image", 0);
-	shader->SetUniformMat4f("projection", projection1);
-	ResourceManager::LoadTexture("assets/textures/awesomeface.png", "face");
+	shader->SetUniformMat4f("projection", projection);
+
+	particleShader->Bind();
+	particleShader->SetUniform1i("sprite", 0);
+	particleShader->SetUniformMat4f("projection", projection);
+	//ResourceManager::LoadTexture("assets/textures/awesomeface.png", "face");
+	ResourceManager::LoadTexture("assets/textures/lrx.png", "face");
 	ResourceManager::LoadTexture("assets/textures/block.png", "block");
 	ResourceManager::LoadTexture("assets/textures/block_solid.png", "block_solid");
 	ResourceManager::LoadTexture("assets/textures/background.jpg","background");
 	ResourceManager::LoadTexture("assets/textures/paddle.png", "paddle");
+	ResourceManager::LoadTexture("assets/textures/particle.png", "particle");
 
 
 	//Level
@@ -49,19 +66,28 @@ void Game::Init(const glm::mat4& projection)
 	Player = new GameObject(playerPos, PLAYER_SIZE, ResourceManager::GetTexture(std::string("paddle")));
 	glm::vec2 ballPos = playerPos + glm::vec2(PLAYER_SIZE.x / 2 - BALL_RADIUS, -BALL_RADIUS * 2);
 	Ball = new BallObject(ballPos, BALL_RADIUS, INITIAL_BALL_VELOCITY, ResourceManager::GetTexture("face"));
-	//Ball->Rotation =-180;
-	//GameLevel two; one.Load("levels/one.lvl", this->Width, this->Height * 0.5);
-	//GameLevel one; one.Load("levels/one.lvl", this->Width, this->Height * 0.5);
-	//GameLevel one; one.Load("levels/one.lvl", this->Width, this->Height * 0.5);
+	Particles = new ParticleGenerator(
+		ResourceManager::GetShader("particle"),
+		ResourceManager::GetTexture("particle"),
+		500);
 	m_Renderer = new SpriteRenderer(*shader);
-
+	Effects = new PostProcessor(ResourceManager::GetShader("postprocessing"), this->Width, this->Height);
 }
 
 void Game::Update(GLfloat dt)
 {
 	Ball->Move(dt, this->Width);
 	DoCollisions();
+	Particles->Update(dt, *Ball, 2, glm::vec2(Ball->GetRadius() / 2.0f));
 
+	if (ShakeTime > 0.0f)
+	{
+		ShakeTime -= dt;
+		if (ShakeTime <= 0.0f)
+		{
+			Effects->Shake = false;
+		}
+	}
 	if (Ball->Position.y >= this->Height) // 球是否接触底部边界？
 	{
 		this->ResetLevel();
@@ -76,7 +102,7 @@ void Game::ProcessInput(GLfloat dt)
 	{
 		GLfloat velocity = PLAYER_VELOCITY * dt;
 		// Move playerboard
-		if (this->Keys[HZ_KEY_A])
+		if (this->Keys[HZ_KEY_A]|| this->Keys[HZ_KEY_LEFT])
 		{
 			if (Player->Position.x >= 0){
 				Player->Position.x -= velocity;
@@ -86,7 +112,7 @@ void Game::ProcessInput(GLfloat dt)
 				}
 			}
 		}
-		if (this->Keys[HZ_KEY_D])
+		if (this->Keys[HZ_KEY_D]|| this->Keys[HZ_KEY_RIGHT])
 		{
 			if (Player->Position.x <= this->Width - Player->Size.x)
 			{
@@ -104,11 +130,15 @@ void Game::Render()
 {
 	if (this->State == GAME_ACTIVE)
 	{
+		Effects->BeginRender();
 		//绘制背景
 		m_Renderer->DrawSprite(*ResourceManager::GetTexture("background"), glm::vec2(0.0, 0.0), glm::vec2(Width, Height), 0.0f);
 		this->Levels[this->Level].Draw(*m_Renderer);
 		Player->Draw(*m_Renderer);
+		Particles->Draw();
 		Ball->Draw(*m_Renderer);
+		Effects->EndRender();
+		Effects->Render(GLCore::Application::Get().GetWindow().GetTime());
 	}
 	
 	//m_Renderer->DrawSprite(*ResourceManager::GetTexture("face"), glm::vec2(200.0f, 200.0f), glm::vec2(300.0f, 400.0f), -135.0f, glm::vec3(0.0f, 1.0f, 0.0f));
@@ -126,6 +156,11 @@ void Game::DoCollisions()
 				if (!box.IsSolid)
 				{
 					box.Destroyed = true;
+				}
+				else
+				{
+					//ShakeTime = 0.05f;
+					//Effects->Shake = true;
 				}
 				//碰撞处理
 				Direction dir = std::get<1>(collision);
@@ -176,13 +211,13 @@ void Game::DoCollisions()
 }
 void Game::ResetLevel()
 {
-	if (this->Level == 0)this->Levels[0].Load("levels/one.lvl", this->Width, this->Height * 0.5f);
+	if (this->Level == 0)this->Levels[0].Load("assets/levels/one.lvl", this->Width, this->Height * 0.5f);
 	else if (this->Level == 1)
-		this->Levels[1].Load("levels/two.lvl", this->Width, this->Height * 0.5f);
+		this->Levels[1].Load("assets/levels/two.lvl", this->Width, this->Height * 0.5f);
 	else if (this->Level == 2)
-		this->Levels[2].Load("levels/three.lvl", this->Width, this->Height * 0.5f);
+		this->Levels[2].Load("assets/levels/three.lvl", this->Width, this->Height * 0.5f);
 	else if (this->Level == 3)
-		this->Levels[3].Load("levels/four.lvl", this->Width, this->Height * 0.5f);
+		this->Levels[3].Load("assets/levels/four.lvl", this->Width, this->Height * 0.5f);
 }
 void Game::ResetPlayer()
 {
