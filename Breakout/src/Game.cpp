@@ -72,6 +72,8 @@ void Game::Init(const glm::mat4& projection1)
 		500);
 	m_Renderer = new SpriteRenderer(*shader);
 	Effects = new PostProcessor(ResourceManager::GetShader("postprocessing"), this->Width, this->Height);
+	//Effects->Confuse = true;
+	Effects->Chaos = true;
 }
 
 void Game::Update(GLfloat dt)
@@ -159,8 +161,8 @@ void Game::DoCollisions()
 				}
 				else
 				{
-					//ShakeTime = 0.05f;
-					//Effects->Shake = true;
+					ShakeTime = 0.05f;
+					Effects->Shake = true;
 				}
 				//Åö×²´¦Àí
 				Direction dir = std::get<1>(collision);

@@ -40,7 +40,7 @@ PostProcessor::PostProcessor(std::shared_ptr<Shader> postProcessingShader, uint3
 	  {  0.0f,   -offset  },  // bottom-center
 	  {  offset, -offset  }   // bottom-right    
 	};
-	postProcessingShader->SetUniform2fv("offsets", 9, &offsets[0][0]);
+	postProcessingShader->SetUniform2fv("offsets", 9, (float*)offsets);
 	GLint edge_kernel[9] = {
 		-1, -1, -1,
 		-1,  8, -1,
@@ -74,6 +74,7 @@ void PostProcessor::EndRender()
 
 void PostProcessor::Render(float time)
 {
+	//glViewport(0, 0, Width, Height); // Ìí¼Ó´ËÐÐ
 	m_PostProcessingShader->Bind();
 	m_PostProcessingShader->SetUniform1f("time", time);
 	m_PostProcessingShader->SetUniform1i("confuse", Confuse);

@@ -90,7 +90,7 @@ void Texture2D::Generate(GLuint width, GLuint height, unsigned char* data)
 	this->m_Height = height;
 	glGenTextures(1, &m_RendererID);
 	glBindTexture(GL_TEXTURE_2D, this->m_RendererID);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 	// Set Texture wrap and filter modes
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);

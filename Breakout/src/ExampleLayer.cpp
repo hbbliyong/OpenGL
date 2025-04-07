@@ -21,9 +21,9 @@ void ExampleLayer::OnAttach()
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	//auto win = Application::Get().GetWindow();
-	//m_Breakout = std::make_unique<Game>(win.GetWidth(), win.GetHeight());
-	m_Breakout = std::make_unique<Game>(800, 600);
+	auto &win = Application::Get().GetWindow();
+	m_Breakout = std::make_unique<Game>(win.GetWidth(), win.GetHeight());
+	//m_Breakout = std::make_unique<Game>(800, 600);
 	m_Breakout->Init(m_CameraController.GetCamera().GetViewProjectionMatrix());
 }
 
@@ -102,9 +102,9 @@ void ExampleLayer::OnUpdate(Timestep ts)
 
 void ExampleLayer::OnImGuiRender()
 {
-	ImGui::Begin("Controls");
-	if (ImGui::ColorEdit4("Square Base Color", glm::value_ptr(m_SquareBaseColor)))
-		m_SquareColor = m_SquareBaseColor;
-	ImGui::ColorEdit4("Square Alternate Color", glm::value_ptr(m_SquareAlternateColor));
-	ImGui::End();
+	//ImGui::Begin("Controls");
+	//if (ImGui::ColorEdit4("Square Base Color", glm::value_ptr(m_SquareBaseColor)))
+	//	m_SquareColor = m_SquareBaseColor;
+	//ImGui::ColorEdit4("Square Alternate Color", glm::value_ptr(m_SquareAlternateColor));
+	//ImGui::End();
 }
