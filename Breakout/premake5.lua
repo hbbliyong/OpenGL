@@ -20,12 +20,19 @@ project "Breakout"
 		"../OpenGL-Core/vendor",
 		"../OpenGL-Core/%{IncludeDir.glm}",
 		"../OpenGL-Core/%{IncludeDir.Glad}",
-		"../OpenGL-Core/%{IncludeDir.ImGui}"
+		"../OpenGL-Core/%{IncludeDir.ImGui}",
+		"vendor/includes",
+	}
+
+	libdirs{
+		"vendor/libs"
 	}
 
 	links
 	{
-		"OpenGL-Core"
+		"OpenGL-Core",
+		"irrKlang",
+		"freetype"
 	}
 
 	filter "system:windows"
@@ -35,7 +42,9 @@ project "Breakout"
 		{
 			"GLCORE_PLATFORM_WINDOWS"
 		}
-
+	postbuildcommands {
+			"{COPY}  %{wks.location}breakout/vendor/bin %{cfg.targetdir}"
+		}        
 	filter "configurations:Debug"
 		defines "GLCORE_DEBUG"
 		runtime "Debug"

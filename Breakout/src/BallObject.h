@@ -10,8 +10,11 @@ public:
 	void Reset(glm::vec2 position, glm::vec2 velocity);
 
 	inline	bool GetStuck() { return m_Stuck; }
-	inline	bool SetStuck(bool stuck) { return m_Stuck=stuck; }
+	inline	bool SetStuck(bool stuck) { return m_Stuck = stuck; }
 	inline	float GetRadius() { return m_Radius; }
+public:
+	bool Sticky = false;
+	bool PassThrough = false;
 private:
 	float m_Radius;
 	bool m_Stuck;

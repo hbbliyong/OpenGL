@@ -23,8 +23,8 @@ void SpriteRenderer::DrawSprite(Texture2D& texture, glm::vec2 positon, glm::vec2
    // m_Shader.SetUniform1i("image", 0);
    texture.Bind();
 
-    GLint currentVBO;
-    glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &currentVBO);
+    //GLint currentVBO;
+    //glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &currentVBO);
     m_Renderer.Draw(m_VAO, *m_IBO, m_Shader);
 }
 

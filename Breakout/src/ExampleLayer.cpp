@@ -82,6 +82,7 @@ void ExampleLayer::OnEvent(Event& event)
 			if (key > 0 && key < 1024)
 			{
 				m_Breakout->Keys[key] = GL_FALSE;
+				m_Breakout->KeysProcessed[key] = GL_FALSE;
 			}
 			return false;
 		});

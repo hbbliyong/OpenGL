@@ -20,7 +20,8 @@ Texture2D::Texture2D(const std::string& path):
 	//}
 	//else
 	{
-		printf("Failed to load texture!\n");
+		std::cout << "Failed to load texture!" << path << std::endl;
+		//printf("%s Failed to load texture!\n",path);
 	}
 
 	GLenum format = GL_RGB;
